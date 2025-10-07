@@ -1,0 +1,9 @@
+[project]
+name = "elevator"
+version = "0.1.0"
+description = "An elevator simulation that has efficiency in mind."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "elevator-py>=0.0.5",
+]
