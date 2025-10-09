@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Elevator Simulation</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="simulation-container">
+        <div class="building-complex" id="building-complex">
+            <div class="floors-container" id="floors-container"></div>
+            <div class="elevator-building" id="elevator-building"></div>
+        </div>
+
+        <div class="controls">
+            <h2>Controls</h2>
+            <div class="tick-info">
+                Tick: <span id="tick-counter">0</span> / <span id="total-ticks">0</span>
+            </div>
+            <input type="range" id="tick-slider" min="0" value="0">
+            <button id="animate-btn">Animate</button>
+            <button id="reset-btn">Reset</button>
+        </div>
+    </div>
+
+    <script src="./main.js"></script>
+</body>
+</html>

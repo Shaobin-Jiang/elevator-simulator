@@ -1,0 +1,180 @@
+:root {
+    --floor-height: 120px;
+    --elevator-width: 180px;
+    --passenger-size: 25px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.simulation-container {
+    display: flex;
+    gap: 30px;
+    align-items: flex-end;
+}
+
+.building-complex {
+    display: flex;
+    align-items: flex-end;
+}
+
+.floors-container {
+    position: relative;
+    background-color: #d3d3d3;
+    border: 2px solid #555;
+    border-right: none;
+    border-bottom: none;
+    width: 200px;
+}
+
+.floor {
+    height: var(--floor-height);
+    border-bottom: 2px dashed #aaa;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 5px;
+}
+
+.floor-label {
+    font-weight: bold;
+    color: #666;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.waiting-passengers {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.elevator-building {
+    position: relative;
+    border: 2px solid #555;
+    border-left: none;
+    border-bottom: none;
+    background-color: #e9e9e9;
+}
+
+.elevator-shaft {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: var(--elevator-width);
+    background-color: rgba(0, 0, 0, 0.05);
+    border-left: 1px solid #ccc;
+}
+
+.elevator {
+    position: absolute;
+    bottom: 0; /* Initial position at ground floor */
+    width: 100%;
+    height: var(--floor-height);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 5px;
+    transition: bottom 0.2s linear; /* Animation for movement */
+}
+
+.elevator-0 {
+    background-color: #88b0eb;
+    border: 2px solid #3678d9;
+}
+.elevator-1 {
+    background-color: #a3e4d7;
+    border: 2px solid #1abc9c;
+}
+.elevator-2 {
+    background-color: #f5b7b1;
+    border: 2px solid #e74c3c;
+}
+.elevator-3 {
+    background-color: #f488f3;
+    border: 2px solid #a520f3;
+}
+
+.elevator-passengers {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    padding: 5px;
+    justify-content: center;
+}
+
+.passenger {
+    width: var(--passenger-size);
+    height: var(--passenger-size);
+    border-radius: 50%;
+    background-color: #ffca28;
+    border: 1px solid #c79a00;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.passenger .id {
+    font-size: 12px;
+}
+.passenger .dest {
+    font-size: 9px;
+    color: #d32f2f;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    align-self: center;
+}
+
+.controls button {
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: white;
+    transition: background-color 0.2s;
+}
+
+.controls button:hover {
+    background-color: #218838;
+}
+.controls button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+.tick-info {
+    text-align: center;
+}
+#tick-slider {
+    width: 100%;
+}
