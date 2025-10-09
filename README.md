@@ -33,3 +33,12 @@ python3 server.py
 ```
 
 This will automatically open the web browser and run the simulation program.
+
+## TODO List
+
+- [x] implement a basic LOOK algorithm
+- [ ] improve effiency of the LOOK algorithm across multiple elevators
+- [ ] create a visualized version of the simulation program
+  - [x] create the basic structure for visualization
+  - [ ] allow user to select traffic file
+  - [ ] show metrics
