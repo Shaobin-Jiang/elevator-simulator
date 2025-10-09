@@ -21,6 +21,7 @@ class ElevatorBusController(ElevatorController):
         self.car_calls: Dict[int, List[int]] = {}
         for elevator in elevators:
             self.car_calls[elevator.id] = []
+            elevator.go_to_floor(elevator.id * (len(floors) - 1) // len(elevators) + 1)
 
     def on_event_execute_start(
         self,
@@ -54,7 +55,13 @@ class ElevatorBusController(ElevatorController):
             for pid in elevator.passengers:
                 p = ProxyPassenger(pid, self.api_client)
                 passengers.append({"id": pid, "o": p.origin, "d": p.destination})
-            snapshot["elevators"].append({"id": elevator.id, "floor": elevator.current_floor_float, "passengers": passengers})
+            snapshot["elevators"].append(
+                {
+                    "id": elevator.id,
+                    "floor": elevator.current_floor_float,
+                    "passengers": passengers,
+                }
+            )
         self.snapshots.append(snapshot)
         print(f"-------------Tick {tick}-------------")
 
@@ -79,9 +86,7 @@ class ElevatorBusController(ElevatorController):
     def on_passenger_board(
         self, elevator: ProxyElevator, passenger: ProxyPassenger
     ) -> None:
-        print(
-            f"Passenger {passenger.id} boarded elevator {elevator.id}"
-        )
+        print(f"Passenger {passenger.id} boarded elevator {elevator.id}")
         destination = passenger.destination
         car_calls = self.car_calls[elevator.id]
         if destination not in car_calls:
@@ -134,7 +139,11 @@ class ElevatorBusController(ElevatorController):
         has_hall_call_ahead = False
         for f in range(search_start, end + step, step):
             search_floor = self.all_floors[f]
-            if len(search_floor.up_queue) > 0 or len(search_floor.down_queue) > 0:
+            if (
+                f in self.car_calls[elevator.id]
+                or len(search_floor.up_queue) > 0
+                or len(search_floor.down_queue) > 0
+            ):
                 has_hall_call_ahead = True
                 break
 
