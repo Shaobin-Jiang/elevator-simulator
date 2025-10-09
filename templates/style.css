@@ -168,13 +168,27 @@ body {
 .controls button:hover {
     background-color: #218838;
 }
+
 .controls button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
 }
+
+.description {
+    display: none;
+    flex-direction: column;
+    gap: 15px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    align-self: center;
+}
+
 .tick-info {
     text-align: center;
 }
+
 #tick-slider {
     width: 100%;
 }
