@@ -6,7 +6,7 @@ Algorithm & Visualization for <https://github.com/ZGCA-Forge/Elevator>.
 
 This project uses [uv](https://github.com/astral-sh/uv) to manage the Python environment.
 
-To install uv, you can follow [official instructions](https://github.com/astral-sh/uv#installing).
+To install uv, you can follow [official instructions](https://github.com/astral-sh/uv?tab=readme-ov-file#installation).
 
 ## Getting Started
 
