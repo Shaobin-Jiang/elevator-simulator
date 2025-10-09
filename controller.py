@@ -10,6 +10,7 @@ PassengerDirection = Literal["up", "down"]
 class ElevatorBusController(ElevatorController):
     def __init__(self, debug: bool = False):
         super().__init__("http://127.0.0.1:8000", debug)
+        self.snapshots = []
 
     def on_init(self, elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None:
         self.all_floors = floors
@@ -40,6 +41,21 @@ class ElevatorBusController(ElevatorController):
         elevators: List[ProxyElevator],
         floors: List[ProxyFloor],
     ) -> None:
+        snapshot = {"floors": [], "elevators": []}
+        for floor in floors:
+            queue = [*floor.down_queue, *floor.up_queue]
+            floor_snapshot = []
+            for pid in queue:
+                p = ProxyPassenger(pid, self.api_client)
+                floor_snapshot.append({"id": pid, "o": p.origin, "d": p.destination})
+            snapshot["floors"].append(floor_snapshot)
+        for elevator in elevators:
+            passengers = []
+            for pid in elevator.passengers:
+                p = ProxyPassenger(pid, self.api_client)
+                passengers.append({"id": pid, "o": p.origin, "d": p.destination})
+            snapshot["elevators"].append({"id": elevator.id, "floor": elevator.current_floor_float, "passengers": passengers})
+        self.snapshots.append(snapshot)
         print(f"-------------Tick {tick}-------------")
 
     def on_passenger_call(
