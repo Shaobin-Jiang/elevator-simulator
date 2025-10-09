@@ -116,7 +116,7 @@ class ElevatorBusController(ElevatorController):
 
         search_start = floor.floor + step
         has_hall_call_ahead = False
-        for f in range(search_start, end, step):
+        for f in range(search_start, end + step, step):
             search_floor = self.all_floors[f]
             if len(search_floor.up_queue) > 0 or len(search_floor.down_queue) > 0:
                 has_hall_call_ahead = True
