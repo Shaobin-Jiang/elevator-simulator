@@ -30,10 +30,7 @@ class ElevatorBusController(ElevatorController):
         elevators: List[ProxyElevator],
         floors: List[ProxyFloor],
     ) -> None:
-        if (tick - 1) % 6 == 0:
-            index = int((tick - 1) / 6)
-            if index < len(elevators):
-                elevators[index - 1].go_to_floor(1)
+        pass
 
     def on_event_execute_end(
         self,
