@@ -32,7 +32,9 @@ source .venv/bin/activate.fish
 python3 server.py
 ```
 
-This will automatically open the web browser and run the simulation program.
+The service now runs at <http://127.0.0.1:8000> by default and the web browser will automatically be opened to run the simulation program at <http://127.0.0.1:8000/demo/index.html>.
+
+You can also view a report on the various metrics for different traffics files at <http://127.0.0.1:8000/report>.
 
 ## TODO List
 
