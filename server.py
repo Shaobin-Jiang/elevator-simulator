@@ -3,9 +3,10 @@ import os
 import webbrowser
 import elevator_saga.server.simulator as simulator
 from elevator_saga.server.simulator import ElevatorSimulation, app
-from flask import jsonify, request, send_from_directory
+from flask import jsonify, request, send_file, send_from_directory
 
 from controller import ElevatorBusController
+from baseline import ElevatorBusExampleController
 
 
 @app.route("/demo/<path:filename>")
@@ -43,6 +44,38 @@ def run_simulation():
         "traffic": info,
     }
     return jsonify(response)
+
+@app.route("/report/")
+def report():
+    return send_file(os.path.join(os.path.dirname(__file__), "templates", "report.html"))
+
+@app.route("/metrics/")
+def metrics():
+    algorithm = request.args.get("algorithm")
+    report_file_base = os.path.join(os.path.dirname(__file__), "report")
+
+    if not os.path.exists(report_file_base):
+        os.mkdir(report_file_base)
+
+    if algorithm == "baseline":
+        controller = ElevatorBusExampleController(url)
+        report_file = os.path.join(report_file_base, "baseline.json")
+    else:
+        controller = ElevatorBusController(url)
+        report_file = os.path.join(report_file_base, "performance.json")
+
+    if not os.path.exists(report_file):
+        metrics = {}
+        for traffic_name in traffic_names:
+            traffic_file = traffic_files[traffic_index[traffic_name]]
+            simulator.simulation.traffic_files = [traffic_file]
+            controller.start()
+            metrics[traffic_name] = simulator.simulation.get_state().metrics.to_dict()
+            
+        with open(report_file, mode="w") as file:
+            file.write(json.dumps(metrics))
+
+    return send_file(report_file)
 
 
 def main():
