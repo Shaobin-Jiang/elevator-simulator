@@ -34,7 +34,7 @@ def run_simulation():
         data = json.load(file)
         info = data["building"]
 
-    c = ElevatorBusController()
+    c = ElevatorBusController(url)
     c.start()
 
     response = {
@@ -46,10 +46,11 @@ def run_simulation():
 
 
 def main():
-    global traffic_files, traffic_index, traffic_names
+    global traffic_files, traffic_index, traffic_names, url
 
     host = "127.0.0.1"
     port = 8000
+    url = f"http://{host}:{port}"
 
     simulator.simulation = ElevatorSimulation(
         os.path.join(os.path.dirname(simulator.__file__), "..", "traffic")
@@ -67,8 +68,8 @@ def main():
     )
     traffic_names.sort()
 
-    print(f"Elevator simulation server running on http://{host}:{port}")
-    webbrowser.open(f"http://{host}:{port}/demo/index.html")
+    print(f"Elevator simulation server running on {url}")
+    webbrowser.open(f"{url}/demo/index.html")
 
     try:
         app.run(host=host, port=port, threaded=True)

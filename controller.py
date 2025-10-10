@@ -8,8 +8,8 @@ PassengerDirection = Literal["up", "down"]
 
 
 class ElevatorBusController(ElevatorController):
-    def __init__(self, debug: bool = False):
-        super().__init__("http://127.0.0.1:8000", debug)
+    def __init__(self, url: str = "http://127.0.0.1:8000"):
+        super().__init__(url)
         self.snapshots = []
 
     def on_init(self, elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None:
