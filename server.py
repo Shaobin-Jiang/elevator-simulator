@@ -29,6 +29,8 @@ def run_simulation():
 
     traffic_file = traffic_files[traffic_index[traffic_name]]
     simulator.simulation.traffic_files = [traffic_file]
+    simulator.simulation.current_traffic_index = 0
+    simulator.simulation.load_current_traffic()
 
     info = {}
     with open(str(traffic_file), mode="r", encoding="utf-8") as file:
