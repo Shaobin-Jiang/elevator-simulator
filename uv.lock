@@ -41,19 +41,19 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "elevator-py", specifier = ">=0.0.5" }]
+requires-dist = [{ name = "elevator-py", specifier = ">=0.0.8" }]
 
 [[package]]
 name = "elevator-py"
-version = "0.0.5"
+version = "0.0.8"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple/" }
 dependencies = [
     { name = "flask" },
     { name = "numpy" },
 ]
-sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/e2/cb/260298ec8afdfaa8624fd43e60b3704d0a45f5781870ea1c1c6d7471cc82/elevator_py-0.0.5.tar.gz", hash = "sha256:c05faaef123fba571ec1beeeb3934c3626a583fee046797cc7842b64c7e60890", size = 42457, upload-time = "2025-10-06T07:20:25.282Z" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/8b/98/18ea71ac27fc040db7b4db2db74d41bd2a623f9e243e577f37a0dea28320/elevator_py-0.0.8.tar.gz", hash = "sha256:88f9bdee45d8092e4247a90c527f2b5d1bd4b9c7202aaff24ba6fc73772c14ef", size = 43069, upload-time = "2025-10-11T18:16:54.715Z" }
 wheels = [
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/f0/8a/db71a0d60f30edbe6c82bcf9ea4948f32e73dba0e21b7afeedb0afd97112/elevator_py-0.0.5-py3-none-any.whl", hash = "sha256:853c40235801cbab06dbe46170f9b35c6b40a8cf5c27f3aea3c7674253abad60", size = 52485, upload-time = "2025-10-06T07:20:23.97Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/97/1c/cbc4b18dc154a6bee103a2c8e629d4118ce135ae09ad23afbf04a398e3c6/elevator_py-0.0.8-py3-none-any.whl", hash = "sha256:b3d354d4b3b8cafb1747add60cc2919948e5c9578537d5781e57b1514e46a1d4", size = 53158, upload-time = "2025-10-11T18:16:53.085Z" },
 ]
 
 [[package]]
