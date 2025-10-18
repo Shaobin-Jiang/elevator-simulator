@@ -24,5 +24,5 @@
     fi
 
     uv sync
-    uv run server.py
+    uv run controller.py
 )
