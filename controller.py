@@ -1,4 +1,6 @@
 from typing import Dict, List, Literal, cast
+import time
+import requests
 
 from elevator_saga.client.base_controller import ElevatorController
 from elevator_saga.client.proxy_models import ProxyElevator, ProxyFloor, ProxyPassenger
@@ -61,6 +63,7 @@ class ElevatorBusController(ElevatorController):
             )
         self.snapshots.append(snapshot)
         print(f"-------------Tick {tick}-------------")
+        time.sleep(0.3)
 
     def on_passenger_call(
         self, passenger: ProxyPassenger, floor: ProxyFloor, direction: str
@@ -167,3 +170,5 @@ class ElevatorBusController(ElevatorController):
 
 if __name__ == "__main__":
     ElevatorBusController().start()
+    # Reset client; otherwise the controller cannot be run again
+    requests.request(method="POST", url="http://127.0.0.1:8000/api/reset")
