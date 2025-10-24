@@ -102,22 +102,22 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "elevator-py", specifier = ">=0.0.10" },
+    { name = "elevator-py", specifier = ">=0.0.11" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.120.0" },
 ]
 
 [[package]]
 name = "elevator-py"
-version = "0.0.10"
+version = "0.0.11"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple/" }
 dependencies = [
     { name = "hypercorn" },
     { name = "numpy" },
     { name = "quart" },
 ]
-sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/a4/05/e47b3a5ca8121468cec109bc66b2679e1954249ae584737453bbcf9dd1b6/elevator_py-0.0.10.tar.gz", hash = "sha256:3e66e42eddcc6615699849130f4dcdcdca777f64052f808a22f86f02cd1eac17", size = 50208, upload-time = "2025-10-19T14:38:30.15Z" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/dc/af/4cf9e183fc89035ed6d39f64d82f008a1ca50471e3c731bf17100e5d68fa/elevator_py-0.0.11.tar.gz", hash = "sha256:b378c9cc3f8b00b45020a009e7b017b11622060ecbddb8f395d6e639841c657c", size = 50181, upload-time = "2025-10-23T16:30:35.947Z" }
 wheels = [
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/2e/71/83bcc62a4473e2584b4e8af96a9946b38a711077246ca8c1f74ad2b641fc/elevator_py-0.0.10-py3-none-any.whl", hash = "sha256:c938389b481044bd6879c329e0698cbb10b3655eb0b0b7664b51df561f5d08d8", size = 60326, upload-time = "2025-10-19T14:38:29.002Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/29/d8/bbfdd1ff9aec0b0df7b060294262375671f27cb352eda882c0dc25e8e9e3/elevator_py-0.0.11-py3-none-any.whl", hash = "sha256:91689aa43345a5767a6576b7a9d32d866d987e1fa8e742a62f9bbf5162c0f47f", size = 60323, upload-time = "2025-10-23T16:30:34.524Z" },
 ]
 
 [[package]]
