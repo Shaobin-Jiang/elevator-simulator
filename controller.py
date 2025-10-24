@@ -1,4 +1,5 @@
 from typing import Dict, List, Literal, cast
+import math
 
 from elevator_saga.client.base_controller import ElevatorController
 from elevator_saga.client.proxy_models import ProxyElevator, ProxyFloor, ProxyPassenger
@@ -17,6 +18,7 @@ class ElevatorBusController(ElevatorController):
 
         # The next move for each elevator after it stops
         self.next_move: Dict[int, int | None] = {}
+        self.idle_elevators: Dict[int, int | None] = {}
 
         self.car_calls: Dict[int, List[int]] = {}
         for elevator in elevators:
@@ -60,6 +62,7 @@ class ElevatorBusController(ElevatorController):
                 }
             )
         self.snapshots.append(snapshot)
+        self.process_idle_elevators()
         print(f"-------------Tick {tick}-------------")
 
     def on_passenger_call(
@@ -93,7 +96,6 @@ class ElevatorBusController(ElevatorController):
         self, elevator: ProxyElevator, passenger: ProxyPassenger, floor: ProxyFloor
     ) -> None:
         print(f"Passenger {passenger.id} got off elevator {elevator.id}")
-        pass
 
     def on_elevator_approaching(
         self, elevator: ProxyElevator, floor: ProxyFloor, direction: str
@@ -125,36 +127,108 @@ class ElevatorBusController(ElevatorController):
             end = 0
 
         if floor.floor == end:
-            self.go_to_floor_next_tick(elevator, end - step)
+            if self.should_turn_around(elevator, floor.floor, direction):
+                self.go_to_floor_next_tick(elevator, end - step)
+            else:
+                self.hold_still(elevator)
             return
 
         if len(queue) > 0:
             self.go_to_floor_next_tick(elevator, floor.floor + step)
             return
 
-        search_start = floor.floor + step
-        has_hall_call_ahead = False
-        for f in range(search_start, end + step, step):
-            search_floor = self.all_floors[f]
-            if (
-                f in self.car_calls[elevator.id]
-                or len(search_floor.up_queue) > 0
-                or len(search_floor.down_queue) > 0
-            ):
-                has_hall_call_ahead = True
-                break
-
-        if has_hall_call_ahead:
+        if self.has_hall_call_ahead(elevator, floor.floor, direction):
             if floor.floor in self.car_calls[elevator.id]:
                 self.go_to_floor_next_tick(elevator, floor.floor + step)
             else:
                 elevator.go_to_floor(floor.floor + step, immediate=True)
         else:
-            self.go_to_floor_next_tick(elevator, floor.floor - step)
+            if self.should_turn_around(elevator, floor.floor, direction):
+                self.go_to_floor_next_tick(elevator, floor.floor - step)
+            else:
+                self.hold_still(elevator)
+
+    def has_hall_call_ahead(
+        self, elevator: ProxyElevator, floor: int, direction: str
+    ) -> bool:
+        direction = cast(PassengerDirection, direction)
+        if direction == "up":
+            step = 1
+            end = len(self.all_floors) - 1
+        else:
+            step = -1
+            end = 0
+
+        _end = end
+        closest_elevator: ProxyElevator | None = None
+        min_distance = 10e9
+        if elevator.id == 3:
+            for e in self.elevators:
+                e = cast(ProxyElevator, e)
+                if e.id != elevator.id and e.target_floor_direction.value == direction:
+                    distance = e.current_floor_float - elevator.current_floor_float
+                    if distance < min_distance:
+                        min_distance = distance
+                        closest_elevator = e
+            if closest_elevator != None:
+                _end = math.floor(closest_elevator.current_floor_float * step) * step
+
+        search_start = floor + step
+        has_hall_call_ahead = False
+        for f in range(search_start, end + step, step):
+            search_floor = self.all_floors[f]
+            same_queue = (
+                search_floor.up_queue if direction == "up" else search_floor.down_queue
+            )
+            opposite_queue = (
+                search_floor.down_queue if direction == "up" else search_floor.up_queue
+            )
+            if (
+                f in self.car_calls[elevator.id]
+                or len(opposite_queue) > 0
+                or (len(same_queue) > 0 and (len(self.elevators) != 4 or f <= _end))
+            ):
+                has_hall_call_ahead = True
+                break
+
+        return has_hall_call_ahead
+
+    def should_turn_around(
+        self, elevator: ProxyElevator, floor: int, direction: str
+    ) -> bool:
+        direction = cast(PassengerDirection, direction)
+        if direction == "up":
+            step = -1
+        else:
+            step = 1
+        return self.has_hall_call_ahead(elevator, floor + step, direction)
 
     def go_to_floor_next_tick(self, elevator: ProxyElevator, floor: int) -> None:
         print(f"Elevator {elevator.id} bound for floor {floor} after next stop.")
         self.next_move[elevator.id] = floor
+
+    def hold_still(self, elevator: ProxyElevator) -> None:
+        self.idle_elevators[elevator.id] = 0
+
+    def process_idle_elevators(self) -> None:
+        for eid in self.idle_elevators:
+            elevator: ProxyElevator = self.elevators[eid]
+            if self.idle_elevators[eid] == None:
+                continue
+            floor: ProxyFloor = self.all_floors[elevator.current_floor]
+            if (
+                self.has_hall_call_ahead(elevator, floor.floor, "down")
+                or len(floor.down_queue) > 0
+            ):
+                elevator.go_to_floor(floor.floor - 1)
+                self.idle_elevators[eid] = None
+                continue
+            if (
+                self.has_hall_call_ahead(elevator, floor.floor, "up")
+                or len(floor.up_queue) > 0
+            ):
+                elevator.go_to_floor(floor.floor + 1)
+                self.idle_elevators[eid] = None
 
     def on_elevator_idle(self, elevator: ProxyElevator) -> None:
         pass
