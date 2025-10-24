@@ -1,69 +1,73 @@
-from flask import Flask, request, Response, send_from_directory, stream_with_context, jsonify
-import requests
-from urllib.parse import unquote_plus
+from contextlib import asynccontextmanager
 import os
 import webbrowser
 
-app = Flask(__name__, template_folder="templates")
+import httpx
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
-@app.route("/demo/<path:filename>")
-def static_file(filename):
-    return send_from_directory(
-        os.path.join(os.path.dirname(__file__), "templates"), filename
-    )
+BASE_BACKEND_URL = "http://127.0.0.1:8000"
 
 
-@app.route("/proxy", methods=["GET", "POST"])
-def proxy():
-    """
-    Proxy endpoint. Client sends the external URL as query parameter `url`.
-    Example: GET /proxy?url=https://api.github.com/zen
-    """
-    raw_url = request.args.get("url", "")
-    print(raw_url)
-    if not raw_url:
-        return jsonify({"error": "Missing 'url' query parameter"}), 400
-
-    # Support URLs that are passed URL-encoded
-    url = unquote_plus(raw_url)
-
-    # Forward method, some headers and body
-    method = request.method
-    headers = {}
-
-    # Forward Content-Type if present
-    if request.content_type:
-        headers["Content-Type"] = request.content_type
-
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Register client on startup (same behavior as original script)
     try:
-        # Stream the remote response back to the client
-        remote_resp = requests.request(
-            method=method,
-            url=url,
-            headers=headers,
-            params=request.args.to_dict(),  # will include 'url' param too; remote servers will ignore unknown params in many cases
-            data=request.get_data(),
-            stream=True,
-            timeout=10,
-        )
-    except requests.exceptions.RequestException as e:
-        return jsonify({"error": "Upstream request failed", "detail": str(e)}), 502
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                f"{BASE_BACKEND_URL}/api/client/register",
+                headers={"Content-Type": "application/json", "X-Client-Type": "gui"},
+            )
+    except Exception:
+        # Ignore registration failures to not block app startup
+        pass
 
-    # Build Flask response streaming the body
-    resp_headers = remote_resp.headers
-    excluded_status = remote_resp.status_code
+    # Open the browser to the demo page
+    try:
+        webbrowser.open("http://127.0.0.1:5137/demo/index.html")
+    except Exception:
+        pass
 
-    def generate():
-        try:
-            for chunk in remote_resp.iter_content(chunk_size=8192):
-                if chunk:
-                    yield chunk
-        finally:
-            remote_resp.close()
+    yield
 
-    return Response(stream_with_context(generate()), status=excluded_status, headers=resp_headers)
+
+app = FastAPI(lifespan=lifespan)
+
+templates_dir = os.path.join(os.path.dirname(__file__), "templates")
+app.mount("/demo", StaticFiles(directory=templates_dir), name="demo")
+
+
+@app.get("/proxy")
+async def proxy(
+    request_type: str = Query("", alias="type"),
+    tick: int = Query(0),
+):
+    try:
+        async with httpx.AsyncClient() as client:
+            if request_type == "state":
+                resp = await client.get(f"{BASE_BACKEND_URL}/api/state")
+                resp.raise_for_status()
+                return JSONResponse(resp.json())
+
+            if request_type == "step":
+                payload = {"current_tick": tick, "ticks": 1}
+                resp = await client.post(
+                    f"{BASE_BACKEND_URL}/api/step",
+                    json=payload,
+                    headers={"Content-Type": "application/json"},
+                )
+                resp.raise_for_status()
+                return JSONResponse(resp.json())
+
+            return JSONResponse({"message": "Nothing"})
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=e.response.text)
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=502, detail=str(e))
 
 
 if __name__ == "__main__":
-    webbrowser.open("http://127.0.0.1:5137/demo/index.html")
-    app.run(host="127.0.0.1", port=5137, debug=True)
+    import uvicorn
+
+    uvicorn.run(app, host="127.0.0.1", port=5137, reload=False)
