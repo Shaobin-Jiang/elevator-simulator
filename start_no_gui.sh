@@ -12,6 +12,6 @@
     fi
 
     uv sync
-    export ELEVATOR_CLIENT_TYPE=gui
-    uv run server.py
+    export ELEVATOR_CLIENT_TYPE=algorithm
+    uv run controller.py
 )
